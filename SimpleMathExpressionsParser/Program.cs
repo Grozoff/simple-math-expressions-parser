@@ -6,7 +6,7 @@ namespace SimpleMathExpressionsParser
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            MathExpressionParser.Start();
         }
     }
 }
