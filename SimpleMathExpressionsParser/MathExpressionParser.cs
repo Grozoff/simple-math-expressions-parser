@@ -6,9 +6,9 @@ namespace SimpleMathExpressionsParser
 {
     public static class MathExpressionParser
     {
-        private const string RegexMatch = @"[1234567890\.\+\-\*\/]*";
+        private const string RegexMatch = @"[1234567890\.\+\-\*\/^%]*";
         private const string RegexNumber = @"[-]?\d+\.?\d*";
-        private const string RegexMultDiv = @"[\*\/]";
+        private const string RegexMultDiv = @"[\*\/^%]";
         private const string RegexPlusMinus = @"[\+\-]";
 
         public static double Parse(string str)
@@ -39,7 +39,7 @@ namespace SimpleMathExpressionsParser
 
                 return Parse(string.Format($"{left}{val}{right}"));
             }
-
+            
             try
             {
                 return double.Parse(str, CultureInfo.InvariantCulture);
@@ -67,6 +67,10 @@ namespace SimpleMathExpressionsParser
                     return leftNum * rightNum;
                 case "/":
                     return leftNum / rightNum;
+                case "^":
+                    return Math.Pow(leftNum, rightNum);
+                case "%":
+                    return leftNum % rightNum;
                 default:
                     return 0;
             }
