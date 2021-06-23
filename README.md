@@ -8,5 +8,5 @@
 - Возведение в степень.
 - Остаток от деления.
 _______
-![](https://i.imgur.com/qC3xqR2.jpeg)
+![](https://i.imgur.com/k4UrfF3.jpeg)
 
