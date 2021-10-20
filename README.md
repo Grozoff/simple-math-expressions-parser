@@ -8,5 +8,13 @@
 - Возведение в степень.
 - Остаток от деления.
 _______
-![](https://i.imgur.com/k4UrfF3.jpeg)
+Сравнение ответов:
+
+- Парсер:
+
+![](https://i.imgur.com/k4UrfF3.jpeg)  
+
+- Гугл калькулятор:
+
+![](https://i.imgur.com/Ws505SQ.jpeg)
 
