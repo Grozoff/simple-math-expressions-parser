@@ -11,91 +11,93 @@ namespace SimpleMathExpressionsParser
         private const string RegexMultDiv = @"[\*\/^%]";
         private const string RegexPlusMinus = @"[\+\-]";
 
+        public static void Start()
+        {
+            Console.WriteLine("Enter your expression or enter \"exit\" to close the program");
+
+            while (true)
+            {
+                Console.Write("Expression: ");
+                var expression = Console.ReadLine();
+
+                if (expression == "exit")
+                {
+                    break;
+                }
+                else if (expression == "help")
+                {
+                    Console.WriteLine("This is a simple calculator that supports the following operations:");
+                    Console.WriteLine("+ (addition)");
+                    Console.WriteLine("- (subtraction)");
+                    Console.WriteLine("* (multiplication)");
+                    Console.WriteLine("/ (division)");
+                    Console.WriteLine("^ (exponentiation)");
+                    Console.WriteLine("% (Integer remainder)");
+                    Console.WriteLine("Use parentheses to group expressions together.");
+                    Console.WriteLine("Examples: 2+2, (2+2)*3, 2^(3-1)");
+                    Console.WriteLine("Type \"exit\" to quit the program.");
+                    Console.WriteLine("____________________\n");
+                    continue;
+                }
+
+                Console.WriteLine($"Answer: {Parse(expression)}\n");
+                Console.WriteLine("____________________\n");
+            }
+        }
+
         public static double Parse(string str)
         {
             str = str.Replace(',', '.');
 
-            Match regexMatch = Regex.Match(str, string.Format($@"\(({RegexMatch})\)"));
+            var regexMatch = Regex.Match(str, $@"\(({RegexMatch})\)");
 
             if (regexMatch.Groups.Count > 1)
             {
-                string middle = regexMatch.Groups[0].Value.Substring(1, regexMatch.Groups[0].Value.Trim().Length - 2);
-                string left = str.Substring(0, regexMatch.Index);
-                string right = str.Substring(regexMatch.Index + regexMatch.Length);
+                var middle = regexMatch.Groups[1].Value;
+                var left = str.Substring(0, regexMatch.Index);
+                var right = str.Substring(regexMatch.Index + regexMatch.Length);
 
                 return Parse(left + Parse(middle) + right);
             }
 
-            Match matchMultDiv = Regex.Match(str, string.Format($@"({RegexNumber})\s?({RegexMultDiv})\s?({RegexNumber})\s?"));
-            Match matchPlusMinus = Regex.Match(str, string.Format($@"({RegexNumber})\s?({RegexPlusMinus})\s?({RegexNumber})\s?"));
+            var matchMultDiv = Regex.Match(str, $@"({RegexNumber})\s?({RegexMultDiv})\s?({RegexNumber})\s?");
+            var matchPlusMinus = Regex.Match(str, $@"({RegexNumber})\s?({RegexPlusMinus})\s?({RegexNumber})\s?");
 
-            var match = (matchMultDiv.Groups.Count > 1) ? matchMultDiv : (matchPlusMinus.Groups.Count > 1) ? matchPlusMinus : null;
+            var match = matchMultDiv.Groups.Count > 1 ? matchMultDiv : matchPlusMinus.Groups.Count > 1 ? matchPlusMinus : null;
 
             if (match != null)
             {
-                string left = str.Substring(0, match.Index);
-                string right = str.Substring(match.Index + match.Length);
-                string val = ParseAction(match).ToString(CultureInfo.InvariantCulture);
+                var left = str.Substring(0, match.Index);
+                var right = str.Substring(match.Index + match.Length);
+                var val = ParseAction(match).ToString(CultureInfo.InvariantCulture);
 
-                return Parse(string.Format($"{left}{val}{right}"));
-            }
-            
-            try
-            {
-                return double.Parse(str, CultureInfo.InvariantCulture);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine($"Syntax error: {str}");
+                return Parse($"{left}{val}{right}");
             }
 
+            if (double.TryParse(str, NumberStyles.Any, CultureInfo.InvariantCulture, out double result))
+            {
+                return result;
+            }
+
+            Console.WriteLine($"Syntax error: {str}");
             return 0;
         }
 
         private static double ParseAction(Match match)
         {
-            double leftNum = double.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
-            double rightNum = double.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
+            var leftNum = double.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+            var rightNum = double.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
 
-            switch (match.Groups[2].Value)
+            return match.Groups[2].Value switch
             {
-                case "+":
-                    return leftNum + rightNum;
-                case "-":
-                    return leftNum - rightNum;
-                case "*":
-                    return leftNum * rightNum;
-                case "/":
-                    return leftNum / rightNum;
-                case "^":
-                    return Math.Pow(leftNum, rightNum);
-                case "%":
-                    return leftNum % rightNum;
-                default:
-                    return 0;
-            }
-        }
-
-        public static void Start()
-        {
-            Console.WriteLine("Enter your expression or enter \"exit\" to close the program");
-
-            bool exit = false;
-            while (!exit)
-            {
-                Console.Write("Expression: ");
-                string expression = Console.ReadLine();
-
-                if (expression != "exit")
-                {
-                    Console.WriteLine($"Answer: {Parse(expression)}");
-                    Console.WriteLine("____________________\n");
-                }
-                else
-                {
-                    exit = true;
-                }
-            }
+                "+" => leftNum + rightNum,
+                "-" => leftNum - rightNum,
+                "*" => leftNum * rightNum,
+                "/" => leftNum / rightNum,
+                "^" => Math.Pow(leftNum, rightNum),
+                "%" => leftNum % rightNum,
+                _ => 0
+            };
         }
     }
 }
